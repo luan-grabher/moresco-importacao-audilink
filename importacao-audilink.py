@@ -129,7 +129,8 @@ def Importacao_audilink(robotParameters):
             contasInvalidas.append(str(conta).strip())
             continue
 
-        lancamentos.at[index, colunaContaIndex] = contaDePara
+        lancamentos.iat[index, colunaContaIndex] = contaDePara
+        
 
     # 7 - Se não existir conta no arquivo de contas - criar linha no arquivo de contas, mencionar no log e marcar que tem uma conta desconhecida
     if len(contasInvalidas) > 0:
@@ -159,8 +160,8 @@ def Importacao_audilink(robotParameters):
             row.append("")
             row.append("")
             row.append(lancamento.iloc[colunaDataIndex].strftime('%d/%m/%Y'))
-            row.append(lancamento.iloc[colunaContaIndex] if lancamento.iloc[colunaTipoContaIndex] == 'D' else "")
-            row.append(lancamento.iloc[colunaContaIndex] if lancamento.iloc[colunaTipoContaIndex] == 'C' else "")
+            row.append(str(lancamento.iloc[colunaContaIndex]) if lancamento.iloc[colunaTipoContaIndex] == 'D' else "")
+            row.append(str(lancamento.iloc[colunaContaIndex]) if lancamento.iloc[colunaTipoContaIndex] == 'C' else "")
             row.append("")
             row.append("80")
 
