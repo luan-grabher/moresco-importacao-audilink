@@ -1,5 +1,6 @@
 import configparser
 import json
+import os
 from pathlib import Path
 import re
 import sys
@@ -46,6 +47,7 @@ def getFileOnFolder(folder, filter):
 
 def Importacao_audilink(robotParameters):
     config.read('importacao-audilink.ini', encoding='utf-8')
+    codigo_empresa = config['paths']['codigo_empresa']
 
     print('Importacao Audilink ' + str(robotParameters['month']) + '/' + str(robotParameters['year']))
 
@@ -105,7 +107,7 @@ def Importacao_audilink(robotParameters):
     colunaTipoContaIndex = getColunaIndexByFilter(colunas, config['arquivo_lancamentos']['coluna_tipo_conta'])
     colunaValorIndex = getColunaIndexByFilter(colunas, config['arquivo_lancamentos']['coluna_valor'])
     colunaHistoricoIndex = getColunaIndexByFilter(colunas, config['arquivo_lancamentos']['coluna_historico'])
-    colunaDescricaoIndex = getColunaIndexByFilter(colunas, config['arquivo_lancamentos']['coluna_descricao'])
+    colunaDescricaoIndex = getColunaIndexByFilter(colunas, config['arquivo_lancamentos']['coluna_descricao']) 
 
     # 5 - Extrair contas do arquivo csv 0 - conta original, 1 - conta nova
     contas = pd.read_csv(arquivoContas, sep=';', encoding='utf-8', usecols=['CONTA', 'DE_PARA'], dtype={'DE_PARA': 'Int64'}).dropna()
@@ -148,8 +150,35 @@ def Importacao_audilink(robotParameters):
 
     # 8 - Caso não exista nenhuma conta desconhecida, criar arquivo de importacao e printar/log que foi criado na mesma pasta do arquivo de lançamentos
     if len(contasInvalidas) == 0:
-        #TODO: criar arquivo de importacao de texto
-        pass
+
+        importacao = []
+        for index, lancamento in lancamentos.iterrows():
+
+            row = []
+            row.append(str(codigo_empresa))
+            row.append("")
+            row.append("")
+            row.append(lancamento.iloc[colunaDataIndex].strftime('%d/%m/%Y'))
+            row.append(lancamento.iloc[colunaContaIndex] if lancamento.iloc[colunaTipoContaIndex] == 'D' else "")
+            row.append(lancamento.iloc[colunaContaIndex] if lancamento.iloc[colunaTipoContaIndex] == 'C' else "")
+            row.append("")
+            row.append("80")
+
+            historico = str(lancamento.iloc[colunaHistoricoIndex]) + ' - ' if str(lancamento.iloc[colunaHistoricoIndex]) != 'nan' else ''
+            historico = historico + str(lancamento.iloc[colunaDescricaoIndex]) if str(lancamento.iloc[colunaDescricaoIndex]) != 'nan' else historico
+            historico = historico.replace(';', ',')
+            row.append(historico)
+            row.append(str(lancamento.iloc[colunaValorIndex]).format('0.2f').replace('.', ','))
+
+            importacao.append(';'.join(row))
+        
+        importacaoTexto = '\n'.join(importacao)
+        arquivoLancamentosFolder = os.path.dirname(arquivoLancamentos)
+        arquivoImportacao = os.path.join(arquivoLancamentosFolder, 'importacao_audilink_' + str(month) + '_' + str(year) + '.txt')
+        with open(arquivoImportacao, 'w', encoding='utf-8') as f:
+            f.write(importacaoTexto)
+
+        print('Arquivo de importação criado em: ' + arquivoImportacao)        
 
 
 #Protection against running the script twice
