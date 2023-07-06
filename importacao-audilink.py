@@ -71,11 +71,11 @@ def Importacao_audilink(robotParameters):
     
     # 3 - Procura arquivo de lançamentos pelo paths.filtro_arquivo_lancamentos
     arquivoLancamentos = getFileOnFolder(pastaArquivoLancamentos, config['paths']['filtro_arquivo_lancamentos'])
-    if arquivoLancamentos is None: raise Exception('Arquivo de lançamentos não encontrado: ' + config['paths']['filtro_arquivo_lancamentos'])
+    if arquivoLancamentos is None: raise Exception('Arquivo de lançamentos não encontrado: ' + config['paths']['filtro_arquivo_lancamentos'] + ' na pasta ' + localArquivoLancamentos)
     
     # 3 - Procura arquivo de contas pelo paths.filtro_arquivo_contas
     arquivoContas = getFileOnFolder(pastaArquivoContas, config['paths']['filtro_arquivo_contas'])
-    if arquivoContas is None: raise Exception('Arquivo de contas não encontrado: ' + config['paths']['filtro_arquivo_contas'])
+    if arquivoContas is None: raise Exception('Arquivo de contas não encontrado: ' + config['paths']['filtro_arquivo_contas'] + ' na pasta ' + localArquivoContas)
 
     # 4 - Extrair lançamentos do arquivo excel pelos nomes das colunas no arquivo de configuração identificados por: [arquivo_lancamentos] .coluna_conta, .coluna_data, .coluna_tipo_conta, .coluna_valor, .coluna_historico, .coluna_descricao
     colunasArquivo = [
@@ -163,7 +163,7 @@ def Importacao_audilink(robotParameters):
             row.append(str(lancamento.iloc[colunaContaIndex]) if lancamento.iloc[colunaTipoContaIndex] == 'D' else "")
             row.append(str(lancamento.iloc[colunaContaIndex]) if lancamento.iloc[colunaTipoContaIndex] == 'C' else "")
             row.append("")
-            row.append("80")
+            row.append("1006")
 
             historico = str(lancamento.iloc[colunaHistoricoIndex]) + ' - ' if str(lancamento.iloc[colunaHistoricoIndex]) != 'nan' else ''
             historico = historico + str(lancamento.iloc[colunaDescricaoIndex]) if str(lancamento.iloc[colunaDescricaoIndex]) != 'nan' else historico
