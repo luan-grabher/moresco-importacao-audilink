@@ -147,7 +147,7 @@ def Importacao_audilink(robotParameters):
         contas.to_csv(arquivoContas, sep=';', encoding='utf-8', index=False)
         print('')
         print('Preencha o arquivo de contas com as contas corretas e rode o robô novamente.')
-        print('Arquivo de contas em: ' + arquivoContas)
+        print('Arquivo de contas em: ' + str(arquivoContas))
 
     # 8 - Caso não exista nenhuma conta desconhecida, criar arquivo de importacao e printar/log que foi criado na mesma pasta do arquivo de lançamentos
     if len(contasInvalidas) == 0:
@@ -205,7 +205,7 @@ try:
             robot.setReturn(log)
         except Exception as e:
             logging.exception(e)
-            robot.setReturn("Erro desconhecido: " + str(e))
+            robot.setReturn(log + "\n\nErro desconhecido: " + str(e))
     except Exception as e:
         print(e)
         robot.setReturn("Parametros passados invalidos: " + json.dumps(robot.parameters))
